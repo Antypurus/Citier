@@ -1,0 +1,28 @@
+services:
+  teamcity-server:
+    image: jetbrains/teamcity-server:2026.1
+    container_name: teamcity-server
+    restart: unless-stopped
+    ports:
+      - "8111:8111"
+    volumes:
+      - teamcity_server_datadir:/data/teamcity_server/datadir
+      - teamcity_server_logs:/opt/teamcity/logs
+
+  teamcity-agent:
+    image: jetbrains/teamcity-agent:2026.1
+    container_name: teamcity-agent
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - SERVER_URL=http://teamcity-server:8111
+      - AGENT_NAME=default-agent
+    volumes:
+      - teamcity_agent_conf:/data/teamcity_agent/conf
+    depends_on:
+      - teamcity-server
+
+volumes:
+  teamcity_server_datadir:
+  teamcity_server_logs:
+  teamcity_agent_conf:
