@@ -1,26 +1,38 @@
 use std::fs;
+use std::io::{BufRead, BufReader};
+use std::process::ExitCode;
+use std::process::exit;
 
-const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
-const COMBAT_LOG_FIELD_DELIMITER: char = ',';
+//const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
+//const COMBAT_LOG_FIELD_DELIMITER: char = ',';
+const COMTBAT_LOG_PATH: &str = "WoWCombatLog-090726_205649.txt";
 
-fn main() {
-    let read_result = fs::read_to_string("WoWCombatLog-090726_205649.txt");
-    let log = match read_result {
-        Ok(value) => value,
-        Err(err) => {
-            eprintln!("Failed to read logfile: {err}");
-            return;
+fn main() -> std::process::ExitCode {
+    let log_file = match fs::File::open(COMTBAT_LOG_PATH) {
+        Ok(file) => file,
+        Err(error) => {
+            eprintln!("{error}");
+            exit(-1);
         }
     };
+    let mut file_reader = BufReader::new(log_file);
 
-    for event in log.lines() {
-        let Some((timestamp, combat_event)) = event.split_once(COMBAT_LOG_TIMESTAMP_DELIMITER)
-        else {
-            eprintln!("Malformed Combat Log Line Found");
-            continue;
-        };
-
-        let fields: Vec<&str> = combat_event.split(COMBAT_LOG_FIELD_DELIMITER).collect();
-        println!("{} - {}", timestamp, fields[0])
+    let mut event = String::new();
+    loop {
+        match file_reader.read_line(&mut event) {
+            Ok(0) => {
+                //nothing left to read we can break
+                break;
+            }
+            Ok(_) => {
+                println!("{event}");
+            }
+            Err(error) => {
+                eprintln!("{error}");
+                return ExitCode::FAILURE;
+            }
+        }
     }
+
+    return ExitCode::SUCCESS;
 }
