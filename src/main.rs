@@ -3,8 +3,8 @@ use std::io::{BufRead, BufReader};
 use std::process::ExitCode;
 use std::process::exit;
 
-//const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
-//const COMBAT_LOG_FIELD_DELIMITER: char = ',';
+const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
+const COMBAT_LOG_FIELD_DELIMITER: char = ',';
 const COMTBAT_LOG_PATH: &str = "WoWCombatLog-090726_205649.txt";
 
 fn main() -> std::process::ExitCode {
@@ -25,7 +25,17 @@ fn main() -> std::process::ExitCode {
                 break;
             }
             Ok(_) => {
-                println!("{event}");
+                match event.split_once(COMBAT_LOG_TIMESTAMP_DELIMITER) {
+                    Some((timestamp, fields)) => {
+                        let split_fields: Vec<&str> =
+                            fields.split(COMBAT_LOG_FIELD_DELIMITER).collect();
+                        println!("{timestamp} - {}", split_fields[0]);
+                    }
+                    None => {
+                        eprintln!("Failed to split log line");
+                    }
+                };
+                event.clear();
             }
             Err(error) => {
                 eprintln!("{error}");
