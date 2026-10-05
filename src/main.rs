@@ -23,6 +23,13 @@ const COMBAT_LOG_EVENT_TYPE_SPELL_ABSORBED: &str = "SPELL_ABSORBED";
 const COMBAT_LOG_EVENT_TYPE_SPELL_HEAL_ABSORBED: &str = "SPELL_HEAL_ABSORBED";
 const COMBAT_LOG_EVENT_TYPE_DAMAGE_SPLIT: &str = "DAMAGE_SPLIT";
 const COMBAT_LOG_EVENT_TYPE_SPELL_INSTAKILL: &str = "SPELL_INSTAKILL";
+// healing & resource events
+const COMBAT_LOG_EVENT_TYPE_SPELL_HEAL: &str = "SPELL_HEAL";
+const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_HEAL: &str = "SPELL_PERIODIC_HEAL";
+const COMBAT_LOG_EVENT_TYPE_SPELL_ENERGIZE: &str = "SPELL_ENERGIZE";
+const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_ENERGIZE: &str = "SPELL_PERIODIC_ENERGIZE";
+const COMBAT_LOG_EVENT_TYPE_SPELL_DRAIN: &str = "SPELL_DRAIN";
+const COMBAT_LOG_EVENT_TYPE_SPELL_LEECH: &str = "SPELL_LEECH";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EventType {
@@ -39,6 +46,13 @@ enum EventType {
     SpellHealAbsorbed,
     DamageSplit,
     SpellInstakill,
+    // Heal & Resource Events
+    SpellHeal,
+    SpellPeriodicHeal,
+    SpellEnergize,
+    SpellPeriodicEnergize,
+    SpellDrain,
+    SpellLeech,
 }
 
 impl FromStr for EventType {
@@ -59,6 +73,13 @@ impl FromStr for EventType {
             COMBAT_LOG_EVENT_TYPE_SPELL_HEAL_ABSORBED => Ok(EventType::SpellHealAbsorbed),
             COMBAT_LOG_EVENT_TYPE_DAMAGE_SPLIT => Ok(EventType::DamageSplit),
             COMBAT_LOG_EVENT_TYPE_SPELL_INSTAKILL => Ok(EventType::SpellInstakill),
+            // Heal & Resource Events
+            COMBAT_LOG_EVENT_TYPE_SPELL_HEAL => Ok(EventType::SpellHeal),
+            COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_HEAL => Ok(EventType::SpellPeriodicHeal),
+            COMBAT_LOG_EVENT_TYPE_SPELL_ENERGIZE => Ok(EventType::SpellEnergize),
+            COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_ENERGIZE => Ok(EventType::SpellPeriodicEnergize),
+            COMBAT_LOG_EVENT_TYPE_SPELL_DRAIN => Ok(EventType::SpellDrain),
+            COMBAT_LOG_EVENT_TYPE_SPELL_LEECH => Ok(EventType::SpellLeech),
             // unknown event
             other => Err(format!("Unknown Event Type: {other}")),
         }
