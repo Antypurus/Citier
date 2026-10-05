@@ -3,10 +3,51 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::process::ExitCode;
 use std::process::exit;
+use std::str::FromStr;
 
 const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
-const _COMBAT_LOG_FIELD_DELIMITER: char = ',';
 const COMTBAT_LOG_PATH: &str = "WoWCombatLog-090726_205649.txt";
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum EventType {
+    Version,
+    // Damage Events
+    SpellDamage,
+    SpellPeriodicDamage,
+    SpellBuildingDamager,
+    RangeDamage,
+    SwingDamage,
+    SwingDamageLanded,
+    EnvironmentalDamage,
+    SpellAbsorbed,
+    SpellHealAbsorbed,
+    DamageSplit,
+    SpellInstakill,
+}
+
+impl FromStr for EventType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "COMBAT_LOG_VERSION" => Ok(EventType::Version),
+            //Damage Events
+            "SPELL_DAMAGE" => Ok(EventType::SpellDamage),
+            "SPELL_PERIODIC_DAMAGE" => Ok(EventType::SpellPeriodicDamage),
+            "SPELL_BUILDING_DAMAGE" => Ok(EventType::SpellBuildingDamager),
+            "RANGE_DAMAGE" => Ok(EventType::RangeDamage),
+            "SWING_DAMAGE" => Ok(EventType::SwingDamage),
+            "SWING_DAMAGE_LANDED" => Ok(EventType::SwingDamageLanded),
+            "ENVIRONMENTAL_DAMAGE" => Ok(EventType::EnvironmentalDamage),
+            "SPELL_ABSORBED" => Ok(EventType::SpellAbsorbed),
+            "SPELL_HEAL_ABSORBED" => Ok(EventType::SpellHealAbsorbed),
+            "DAMAGE_SPLIT" => Ok(EventType::DamageSplit),
+            "SPELL_INSTAKILL" => Ok(EventType::SpellInstakill),
+            // unknown event
+            other => Err(format!("Unknown Event Type: {other}")),
+        }
+    }
+}
 
 fn _event_tokenizer(event: &str) -> Vec<&str> {
     let mut fields: Vec<&str> = Vec::new();
@@ -51,6 +92,7 @@ fn main() -> std::process::ExitCode {
 
     let mut event = String::new();
     loop {
+        event.clear();
         match file_reader.read_line(&mut event) {
             Ok(0) => {
                 //nothing left to read we can break
@@ -60,13 +102,19 @@ fn main() -> std::process::ExitCode {
                 match event.split_once(COMBAT_LOG_TIMESTAMP_DELIMITER) {
                     Some((timestamp, fields)) => {
                         let split_fields: Vec<&str> = _event_tokenizer(&fields);
-                        println!("{timestamp} - {:?}", split_fields);
+                        let event_type = match EventType::from_str(split_fields[0]) {
+                            Ok(event) => event,
+                            Err(error) => {
+                                eprintln!("{error}");
+                                continue;
+                            }
+                        };
+                        println!("{timestamp} - {event_type:?} - {:?}", &split_fields[1..]);
                     }
                     None => {
                         eprintln!("Failed to split log line");
                     }
                 };
-                event.clear();
             }
             Err(error) => {
                 eprintln!("{error}");
