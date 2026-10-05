@@ -5,12 +5,28 @@ use std::process::ExitCode;
 use std::process::exit;
 use std::str::FromStr;
 
-const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
 const COMTBAT_LOG_PATH: &str = "WoWCombatLog-090726_205649.txt";
+
+const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
+
+// raw combat event strings
+const COMBAT_LOG_EVENT_TYPE_LOG_VERSION: &str = "COMBAT_LOG_VERSION";
+// damage event raw strings
+const COMBAT_LOG_EVENT_TYPE_SPELL_DAMAGE: &str = "SPELL_DAMAGE";
+const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_DAMAGE: &str = "SPELL_PERIODIC_DAMAGE";
+const COMBAT_LOG_EVENT_TYPE_SPELL_BUILDING_DAMAGE: &str = "SPELL_BUILDING_DAMAGE";
+const COMBAT_LOG_EVENT_TYPE_RANGE_DAMAGE: &str = "RANGE_DAMAGE";
+const COMBAT_LOG_EVENT_TYPE_SWING_DAMAGE: &str = "SWING_DAMAGE";
+const COMBAT_LOG_EVENT_TYPE_SWING_DAMAGE_LANDED: &str = "SWING_DAMAGE_LANDED";
+const COMBAT_LOG_EVENT_TYPE_ENVIRONMENTAL_DAMAGE: &str = "ENVIRONMENTAL_DAMAGE";
+const COMBAT_LOG_EVENT_TYPE_SPELL_ABSORBED: &str = "SPELL_ABSORBED";
+const COMBAT_LOG_EVENT_TYPE_SPELL_HEAL_ABSORBED: &str = "SPELL_HEAL_ABSORBED";
+const COMBAT_LOG_EVENT_TYPE_DAMAGE_SPLIT: &str = "DAMAGE_SPLIT";
+const COMBAT_LOG_EVENT_TYPE_SPELL_INSTAKILL: &str = "SPELL_INSTAKILL";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EventType {
-    Version,
+    LogVersion,
     // Damage Events
     SpellDamage,
     SpellPeriodicDamage,
@@ -30,19 +46,19 @@ impl FromStr for EventType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "COMBAT_LOG_VERSION" => Ok(EventType::Version),
+            COMBAT_LOG_EVENT_TYPE_LOG_VERSION => Ok(EventType::LogVersion),
             //Damage Events
-            "SPELL_DAMAGE" => Ok(EventType::SpellDamage),
-            "SPELL_PERIODIC_DAMAGE" => Ok(EventType::SpellPeriodicDamage),
-            "SPELL_BUILDING_DAMAGE" => Ok(EventType::SpellBuildingDamager),
-            "RANGE_DAMAGE" => Ok(EventType::RangeDamage),
-            "SWING_DAMAGE" => Ok(EventType::SwingDamage),
-            "SWING_DAMAGE_LANDED" => Ok(EventType::SwingDamageLanded),
-            "ENVIRONMENTAL_DAMAGE" => Ok(EventType::EnvironmentalDamage),
-            "SPELL_ABSORBED" => Ok(EventType::SpellAbsorbed),
-            "SPELL_HEAL_ABSORBED" => Ok(EventType::SpellHealAbsorbed),
-            "DAMAGE_SPLIT" => Ok(EventType::DamageSplit),
-            "SPELL_INSTAKILL" => Ok(EventType::SpellInstakill),
+            COMBAT_LOG_EVENT_TYPE_SPELL_DAMAGE => Ok(EventType::SpellDamage),
+            COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_DAMAGE => Ok(EventType::SpellPeriodicDamage),
+            COMBAT_LOG_EVENT_TYPE_SPELL_BUILDING_DAMAGE => Ok(EventType::SpellBuildingDamager),
+            COMBAT_LOG_EVENT_TYPE_RANGE_DAMAGE => Ok(EventType::RangeDamage),
+            COMBAT_LOG_EVENT_TYPE_SWING_DAMAGE => Ok(EventType::SwingDamage),
+            COMBAT_LOG_EVENT_TYPE_SWING_DAMAGE_LANDED => Ok(EventType::SwingDamageLanded),
+            COMBAT_LOG_EVENT_TYPE_ENVIRONMENTAL_DAMAGE => Ok(EventType::EnvironmentalDamage),
+            COMBAT_LOG_EVENT_TYPE_SPELL_ABSORBED => Ok(EventType::SpellAbsorbed),
+            COMBAT_LOG_EVENT_TYPE_SPELL_HEAL_ABSORBED => Ok(EventType::SpellHealAbsorbed),
+            COMBAT_LOG_EVENT_TYPE_DAMAGE_SPLIT => Ok(EventType::DamageSplit),
+            COMBAT_LOG_EVENT_TYPE_SPELL_INSTAKILL => Ok(EventType::SpellInstakill),
             // unknown event
             other => Err(format!("Unknown Event Type: {other}")),
         }
