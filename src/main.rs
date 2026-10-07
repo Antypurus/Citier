@@ -24,12 +24,20 @@ const COMBAT_LOG_EVENT_TYPE_SPELL_HEAL_ABSORBED: &str = "SPELL_HEAL_ABSORBED";
 const COMBAT_LOG_EVENT_TYPE_DAMAGE_SPLIT: &str = "DAMAGE_SPLIT";
 const COMBAT_LOG_EVENT_TYPE_SPELL_INSTAKILL: &str = "SPELL_INSTAKILL";
 // healing & resource events
-const COMBAT_LOG_EVENT_TYPE_SPELL_HEAL: &str = "SPELL_HEAL";
-const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_HEAL: &str = "SPELL_PERIODIC_HEAL";
-const COMBAT_LOG_EVENT_TYPE_SPELL_ENERGIZE: &str = "SPELL_ENERGIZE";
-const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_ENERGIZE: &str = "SPELL_PERIODIC_ENERGIZE";
-const COMBAT_LOG_EVENT_TYPE_SPELL_DRAIN: &str = "SPELL_DRAIN";
-const COMBAT_LOG_EVENT_TYPE_SPELL_LEECH: &str = "SPELL_LEECH";
+const COMBAT_LOG_EVENT_TYPE_SPELL_HEAL: &str = "SPELL_HEAL"; //NOTE: Direct Heal
+const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_HEAL: &str = "SPELL_PERIODIC_HEAL"; //NOTE: HoT Tick
+const COMBAT_LOG_EVENT_TYPE_SPELL_ENERGIZE: &str = "SPELL_ENERGIZE"; //NOTE: Resource Gain
+const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_ENERGIZE: &str = "SPELL_PERIODIC_ENERGIZE"; //NOTE: Periodic resource gain
+const COMBAT_LOG_EVENT_TYPE_SPELL_DRAIN: &str = "SPELL_DRAIN"; //NOTE: Resource drain
+const COMBAT_LOG_EVENT_TYPE_SPELL_LEECH: &str = "SPELL_LEECH"; //NOTE: Leech effect
+// aura events
+const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_APLIED: &str = "SPELL_AURA_APPLIED"; //NOTE: Aura Applied
+const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REMOVED: &str = "SPELL_AURA_REMOVED"; //NOTE: Aura dropped
+const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REFRESH: &str = "SPELL_AURA_REFRESH"; //NOTE: Aura refreshed
+const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_APPLIED_DOSE: &str = "SPELL_AURA_APPLIED_DOSE"; //NOTE: Aura Stack Applied
+const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REMOVED_DOSE: &str = "SPELL_AURA_REMOVED_DOSE"; //NOTE: Aura Stack Consumed
+const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN: &str = "SPELL_AURA_BROKEN"; //NOTE: Aura Broken By Damage
+const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN_SPELL: &str = "SPELL_AURA_BROKEN_SPELL"; //NOTE: Aura Broken By Dispell/Cleanse
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EventType {
@@ -53,6 +61,14 @@ enum EventType {
     SpellPeriodicEnergize,
     SpellDrain,
     SpellLeech,
+    // Aura Events
+    SpellAuraApplied,
+    SpellAuraRemoved,
+    SpellAuraRefresh,
+    SpellAuraDoseApplied,
+    SpellAuraDoseRemoved,
+    SpellAuraBroken,
+    SpellAuraBrokenSpell,
 }
 
 impl FromStr for EventType {
@@ -80,6 +96,14 @@ impl FromStr for EventType {
             COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_ENERGIZE => Ok(EventType::SpellPeriodicEnergize),
             COMBAT_LOG_EVENT_TYPE_SPELL_DRAIN => Ok(EventType::SpellDrain),
             COMBAT_LOG_EVENT_TYPE_SPELL_LEECH => Ok(EventType::SpellLeech),
+            // Aura Events
+            COMBAT_LOG_EVENT_TYPE_SPELL_AURA_APLIED => Ok(EventType::SpellAuraApplied),
+            COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REMOVED => Ok(EventType::SpellAuraRemoved),
+            COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REFRESH => Ok(EventType::SpellAuraRefresh),
+            COMBAT_LOG_EVENT_TYPE_SPELL_AURA_APPLIED_DOSE => Ok(EventType::SpellAuraDoseApplied),
+            COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REMOVED_DOSE => Ok(EventType::SpellAuraDoseRemoved),
+            COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN => Ok(EventType::SpellAuraBroken),
+            COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN_SPELL => Ok(EventType::SpellAuraBrokenSpell),
             // unknown event
             other => Err(format!("Unknown Event Type: {other}")),
         }
