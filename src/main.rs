@@ -42,6 +42,12 @@ const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN_SPELL: &str = "SPELL_AURA_BROKEN_S
 const COMBAT_LOG_EVENT_TYPE_SPELL_CAST_START: &str = "SPELL_CAST_START"; //non-instant cast started
 const COMBAT_LOG_EVENT_TYPE_SPELL_CAST_SUCCESS: &str = "SPELL_CAST_SUCCESS"; //cast finished (ability fired, not a damage event)
 const COMBAT_LOG_EVENT_TYPE_SPELL_CAST_FAILED: &str = "SPELL_CAST_FAILED"; //cast interrupted (i.e. movement, out of range, etc...)
+// special events
+const COMBAT_LOG_EVENT_TYPE_SPELL_INTERRUPT: &str = "SPELL_INTERRUPT"; //NOTE: cast kick
+const COMBAT_LOG_EVENT_TYPE_SPELL_DISPEL: &str = "SPELL_DISPEL"; //NOTE: Dispel
+const COMBAT_LOG_EVENT_TYPE_SPELL_STOLEN: &str = "SPELL_STOLEN"; //NOTE: Spellsteal 
+const COMBAT_LOG_EVENT_TYPE_SPELL_SUMMON: &str = "SPELL_SUMMON";
+const COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT: &str = "SPELL_RESURRECT";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EventType {
@@ -77,6 +83,12 @@ enum EventType {
     SpellCastStart,
     SpellCastSuccess,
     SpellCastFailed,
+    // Special Events
+    SpellInterrupt,
+    SpellDispel,
+    SpellStolen,
+    SpellSummon,
+    SpellResurrect,
 }
 
 impl FromStr for EventType {
@@ -116,6 +128,12 @@ impl FromStr for EventType {
             COMBAT_LOG_EVENT_TYPE_SPELL_CAST_START => Ok(EventType::SpellCastStart),
             COMBAT_LOG_EVENT_TYPE_SPELL_CAST_SUCCESS => Ok(EventType::SpellCastSuccess),
             COMBAT_LOG_EVENT_TYPE_SPELL_CAST_FAILED => Ok(EventType::SpellCastFailed),
+            // Special Events
+            COMBAT_LOG_EVENT_TYPE_SPELL_INTERRUPT => Ok(EventType::SpellInterrupt),
+            COMBAT_LOG_EVENT_TYPE_SPELL_DISPEL => Ok(EventType::SpellDispel),
+            COMBAT_LOG_EVENT_TYPE_SPELL_STOLEN => Ok(EventType::SpellStolen),
+            COMBAT_LOG_EVENT_TYPE_SPELL_SUMMON => Ok(EventType::SpellSummon),
+            COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT => OK(EventType::SpellResurrect),
             // unknown event
             other => Err(format!("Unknown Event Type: {other}")),
         }
@@ -163,7 +181,7 @@ fn main() -> std::process::ExitCode {
     };
     let mut file_reader = BufReader::new(log_file);
 
-    let mut unhandledEventCount: usize = 0;
+    let mut unhandled_event_count: usize = 0;
     let mut event = String::new();
     loop {
         event.clear();
@@ -179,7 +197,7 @@ fn main() -> std::process::ExitCode {
                         let event_type = match EventType::from_str(split_fields[0]) {
                             Ok(event) => event,
                             Err(error) => {
-                                unhandledEventCount += 1;
+                                unhandled_event_count += 1;
                                 eprintln!("{error}");
                                 continue;
                             }
@@ -198,6 +216,6 @@ fn main() -> std::process::ExitCode {
         }
     }
 
-    println!("Unhandled Event Count: {unhandledEventCount}");
+    println!("Unhandled Event Count: {unhandled_event_count}");
     return ExitCode::SUCCESS;
 }
