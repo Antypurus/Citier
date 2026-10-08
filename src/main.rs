@@ -38,6 +38,10 @@ const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_APPLIED_DOSE: &str = "SPELL_AURA_APPLIED_
 const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REMOVED_DOSE: &str = "SPELL_AURA_REMOVED_DOSE"; //NOTE: Aura Stack Consumed
 const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN: &str = "SPELL_AURA_BROKEN"; //NOTE: Aura Broken By Damage
 const COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN_SPELL: &str = "SPELL_AURA_BROKEN_SPELL"; //NOTE: Aura Broken By Dispell/Cleanse
+// cast events
+const COMBAT_LOG_EVENT_TYPE_SPELL_CAST_START: &str = "SPELL_CAST_START"; //non-instant cast started
+const COMBAT_LOG_EVENT_TYPE_SPELL_CAST_SUCCESS: &str = "SPELL_CAST_SUCCESS"; //cast finished (ability fired, not a damage event)
+const COMBAT_LOG_EVENT_TYPE_SPELL_CAST_FAILED: &str = "SPELL_CAST_FAILED"; //cast interrupted (i.e. movement, out of range, etc...)
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EventType {
@@ -69,6 +73,10 @@ enum EventType {
     SpellAuraDoseRemoved,
     SpellAuraBroken,
     SpellAuraBrokenSpell,
+    // cast events
+    SpellCastStart,
+    SpellCastSuccess,
+    SpellCastFailed,
 }
 
 impl FromStr for EventType {
@@ -104,6 +112,10 @@ impl FromStr for EventType {
             COMBAT_LOG_EVENT_TYPE_SPELL_AURA_REMOVED_DOSE => Ok(EventType::SpellAuraDoseRemoved),
             COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN => Ok(EventType::SpellAuraBroken),
             COMBAT_LOG_EVENT_TYPE_SPELL_AURA_BROKEN_SPELL => Ok(EventType::SpellAuraBrokenSpell),
+            // Cast Events
+            COMBAT_LOG_EVENT_TYPE_SPELL_CAST_START => Ok(EventType::SpellCastStart),
+            COMBAT_LOG_EVENT_TYPE_SPELL_CAST_SUCCESS => Ok(EventType::SpellCastSuccess),
+            COMBAT_LOG_EVENT_TYPE_SPELL_CAST_FAILED => Ok(EventType::SpellCastFailed),
             // unknown event
             other => Err(format!("Unknown Event Type: {other}")),
         }
