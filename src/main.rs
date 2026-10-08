@@ -163,6 +163,7 @@ fn main() -> std::process::ExitCode {
     };
     let mut file_reader = BufReader::new(log_file);
 
+    let mut unhandledEventCount: usize = 0;
     let mut event = String::new();
     loop {
         event.clear();
@@ -178,6 +179,7 @@ fn main() -> std::process::ExitCode {
                         let event_type = match EventType::from_str(split_fields[0]) {
                             Ok(event) => event,
                             Err(error) => {
+                                unhandledEventCount += 1;
                                 eprintln!("{error}");
                                 continue;
                             }
@@ -196,5 +198,6 @@ fn main() -> std::process::ExitCode {
         }
     }
 
+    println!("Unhandled Event Count: {unhandledEventCount}");
     return ExitCode::SUCCESS;
 }
