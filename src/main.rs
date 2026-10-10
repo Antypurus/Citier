@@ -1,4 +1,5 @@
 use core::iter::Iterator;
+use std::collections::HashSet;
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::process::ExitCode;
@@ -199,7 +200,7 @@ fn main() -> std::process::ExitCode {
     };
     let mut file_reader = BufReader::new(log_file);
 
-    let mut unhandled_event_count: usize = 0;
+    let mut unhandled_event_types: HashSet<String> = HashSet::new();
     let mut event = String::new();
     loop {
         event.clear();
@@ -215,7 +216,7 @@ fn main() -> std::process::ExitCode {
                         let event_type = match EventType::from_str(split_fields[0]) {
                             Ok(event) => event,
                             Err(error) => {
-                                unhandled_event_count += 1;
+                                unhandled_event_types.insert(String::from_str(&split_fields[0]).unwrap());
                                 eprintln!("{error}");
                                 continue;
                             }
@@ -234,6 +235,10 @@ fn main() -> std::process::ExitCode {
         }
     }
 
-    println!("Unhandled Event Count: {unhandled_event_count}");
+    println!("");
+    println!("Unhandled Event Count: {}", unhandled_event_types.len());
+    for event in unhandled_event_types {
+        println!("\t -> {event}");
+    }
     return ExitCode::SUCCESS;
 }
