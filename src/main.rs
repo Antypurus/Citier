@@ -46,8 +46,14 @@ const COMBAT_LOG_EVENT_TYPE_SPELL_CAST_FAILED: &str = "SPELL_CAST_FAILED"; //cas
 const COMBAT_LOG_EVENT_TYPE_SPELL_INTERRUPT: &str = "SPELL_INTERRUPT"; //NOTE: cast kick
 const COMBAT_LOG_EVENT_TYPE_SPELL_DISPEL: &str = "SPELL_DISPEL"; //NOTE: Dispel
 const COMBAT_LOG_EVENT_TYPE_SPELL_STOLEN: &str = "SPELL_STOLEN"; //NOTE: Spellsteal 
-const COMBAT_LOG_EVENT_TYPE_SPELL_SUMMON: &str = "SPELL_SUMMON";
-const COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT: &str = "SPELL_RESURRECT";
+const COMBAT_LOG_EVENT_TYPE_SPELL_SUMMON: &str = "SPELL_SUMMON"; //NOTE: Summon (used for pet attribution)
+const COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT: &str = "SPELL_RESURRECT"; //NOTE: Combat Res
+const COMBAT_LOG_EVENT_TYPE_SWING_MISSED: &str = "SWING_MISSED"; //NOTE: Swing Whiffed
+const COMBAT_LOG_EVENT_TYPE_SPELL_MISSED: &str = "SPELL_MISSED"; //NOTE: Spell Whiffed
+const COMBAT_LOG_EVENT_TYPE_RANGE_MISSED: &str = "RANGE_MISSED"; //NOTE: Range Whiffed
+const COMBAT_LOG_EVENT_TYPE_UNIT_DIED: &str = "UNIT_DIED"; //NOTE: some unit died (there might an associated killing blow event)
+const COMBAT_LOG_EVENT_TYPE_UNIT_DESTROYED: &str = "UNIT_DESTROYED"; //NOTE: pet/totem/object detroyed
+const COMBAT_LOG_EVENT_TYPE_UNIT_DISSIPATES: &str = "UNIT_DISSIPATES"; //NOTE: unit fades out (similar to unit killed)
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EventType {
@@ -89,6 +95,12 @@ enum EventType {
     SpellStolen,
     SpellSummon,
     SpellResurrect,
+    SwingMissed,
+    SpellMissed,
+    RangeMissed,
+    UnitDied,
+    UnitDestroyed,
+    UnitDissipates,
 }
 
 impl FromStr for EventType {
@@ -133,7 +145,13 @@ impl FromStr for EventType {
             COMBAT_LOG_EVENT_TYPE_SPELL_DISPEL => Ok(EventType::SpellDispel),
             COMBAT_LOG_EVENT_TYPE_SPELL_STOLEN => Ok(EventType::SpellStolen),
             COMBAT_LOG_EVENT_TYPE_SPELL_SUMMON => Ok(EventType::SpellSummon),
-            COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT => OK(EventType::SpellResurrect),
+            COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT => Ok(EventType::SpellResurrect),
+            COMBAT_LOG_EVENT_TYPE_SWING_MISSED => Ok(EventType::SwingMissed),
+            COMBAT_LOG_EVENT_TYPE_SPELL_MISSED => Ok(EventType::SpellMissed),
+            COMBAT_LOG_EVENT_TYPE_RANGE_MISSED => Ok(EventType::RangeMissed),
+            COMBAT_LOG_EVENT_TYPE_UNIT_DIED => Ok(EventType::UnitDied),
+            COMBAT_LOG_EVENT_TYPE_UNIT_DESTROYED => Ok(EventType::UnitDestroyed),
+            COMBAT_LOG_EVENT_TYPE_UNIT_DISSIPATES => Ok(EventType::UnitDissipates),
             // unknown event
             other => Err(format!("Unknown Event Type: {other}")),
         }
