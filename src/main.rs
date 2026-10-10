@@ -11,7 +11,18 @@ const COMTBAT_LOG_PATH: &str = "WoWCombatLog-090726_205649.txt";
 const COMBAT_LOG_TIMESTAMP_DELIMITER: &str = "  ";
 
 // raw combat event strings
+// Encounter & Metadata Events
 const COMBAT_LOG_EVENT_TYPE_LOG_VERSION: &str = "COMBAT_LOG_VERSION";
+const COMBAT_LOG_EVENT_TYPE_ENCOUNTER_START: &str = "ENCOUNTER_START";
+const COMBAT_LOG_EVENT_TYPE_ENCOUNTER_END: &str = "ENCOUNTER_END";
+const COMBAT_LOG_EVENT_TYPE_CHALLENGE_MODE_START: &str = "CHALLENGE_MODE_START";
+const COMBAT_LOG_EVENT_TYPE_CHALLENGE_MODE_END: &str = "CHALLENGE_MODE_END";
+const COMBAT_LOG_EVENT_TYPE_ZONE_CHANGE: &str = "ZONE_CHANGE";
+const COMBAT_LOG_EVENT_TYPE_MAP_CHANGE: &str = "MAP_CHANGE";
+const COMBAT_LOG_EVENT_TYPE_UNIT_HEALTH: &str = "UNIT_HEALTH";
+const COMBAT_LOG_EVENT_TYPE_WORLD_MARKER_PLACED: &str = "WORLD_MARKER_PLACED";
+const COMBAT_LOG_EVENT_TYPE_WORLD_MARKER_REMOVED: &str = "WORLD_MARKER_REMOVED";
+const COMBAT_LOG_EVENT_TYPE_COMBATANT_INFO: &str = "COMBATANT_INFO";
 // damage event raw strings
 const COMBAT_LOG_EVENT_TYPE_SPELL_DAMAGE: &str = "SPELL_DAMAGE";
 const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_DAMAGE: &str = "SPELL_PERIODIC_DAMAGE";
@@ -58,7 +69,18 @@ const COMBAT_LOG_EVENT_TYPE_UNIT_DISSIPATES: &str = "UNIT_DISSIPATES"; //NOTE: u
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EventType {
+    //Encounter & Metadata Events
     LogVersion,
+    EncounterStart,
+    EncounterEnd,
+    ChallengeModeStart,
+    ChallengeModeEnd,
+    ZoneChange,
+    MapChange,
+    UnitHealth,
+    WorldMarkerPlaced,
+    WorldMarketRemoved,
+    CombatantInfo,
     // Damage Events
     SpellDamage,
     SpellPeriodicDamage,
@@ -109,7 +131,18 @@ impl FromStr for EventType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
+            //Encounter & Metadata Events
             COMBAT_LOG_EVENT_TYPE_LOG_VERSION => Ok(EventType::LogVersion),
+            COMBAT_LOG_EVENT_TYPE_ENCOUNTER_START => Ok(EventType::EncounterStart),
+            COMBAT_LOG_EVENT_TYPE_ENCOUNTER_END => Ok(EventType::EncounterEnd),
+            COMBAT_LOG_EVENT_TYPE_CHALLENGE_MODE_START => Ok(EventType::ChallengeModeStart),
+            COMBAT_LOG_EVENT_TYPE_CHALLENGE_MODE_END => Ok(EventType::ChallengeModeEnd),
+            COMBAT_LOG_EVENT_TYPE_ZONE_CHANGE => Ok(EventType::ZoneChange),
+            COMBAT_LOG_EVENT_TYPE_MAP_CHANGE => Ok(EventType::MapChange),
+            COMBAT_LOG_EVENT_TYPE_UNIT_HEALTH => Ok(EventType::UnitHealth),
+            COMBAT_LOG_EVENT_TYPE_WORLD_MARKER_PLACED => Ok(EventType::WorldMarkerPlaced),
+            COMBAT_LOG_EVENT_TYPE_WORLD_MARKER_REMOVED => Ok(EventType::WorldMarketRemoved),
+            COMBAT_LOG_EVENT_TYPE_COMBATANT_INFO => Ok(EventType::CombatantInfo),
             //Damage Events
             COMBAT_LOG_EVENT_TYPE_SPELL_DAMAGE => Ok(EventType::SpellDamage),
             COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_DAMAGE => Ok(EventType::SpellPeriodicDamage),
