@@ -59,6 +59,7 @@ const COMBAT_LOG_EVENT_TYPE_UNIT_DISSIPATES: &str = "UNIT_DISSIPATES"; //NOTE: u
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EventType {
+    Unknown,
     //Encounter & Metadata Events
     LogVersion,
     EncounterStart,

@@ -1,7 +1,9 @@
 mod log_parser {
+    pub mod event;
     pub mod event_type;
 }
 
+use log_parser::event::EventBase;
 use log_parser::event_type::EventType;
 
 use core::iter::Iterator;
@@ -13,18 +15,17 @@ use std::process::exit;
 use std::str::FromStr;
 
 // Makeup of a WoW Combat Event:
-// 11 Base Parameters:
+// 10 Base Parameters:
 //  0 - Timestamp
 //  1 - Event Type String ("SPELL_DAMAGE")
-//  2 - bool indicating weather the source unit is hidden (hidden = empty source string)
-//  3 - GUID String for Source Unit
-//  4 - Source Unit Name
-//  5 - Flags for the source Unit
-//  6 - Source Unit Raid Flags
-//  7 - GUID String for destination unit
-//  8 - Destination Unit Name
-//  9 - Destination Unit Flags
-//  10 - Destination Unit Raid Flags
+//  2 - GUID String for Source Unit
+//  3 - Source Unit Name
+//  4 - Flags for the source Unit
+//  5 - Source Unit Raid Flags
+//  6 - GUID String for destination unit
+//  7 - Destination Unit Name
+//  8 - Destination Unit Flags
+//  9 - Destination Unit Raid Flags
 // 0 - 3 Prefix Related Params
 // 17 Advanced Parameters
 // 0 - 10 Suffix Parameters
@@ -74,6 +75,8 @@ fn main() -> std::process::ExitCode {
     };
     let mut file_reader = BufReader::new(log_file);
 
+    let mut events: Vec<EventBase> = Vec::new();
+
     let mut unhandled_event_types: HashSet<String> = HashSet::new();
     let mut event = String::new();
     loop {
@@ -95,7 +98,9 @@ fn main() -> std::process::ExitCode {
                                 continue;
                             }
                         };
-                        println!("{timestamp} - {event_type:?} - {:?}({})", &split_fields[1..], split_fields[1..].len());
+                        if split_fields.len() >= 9 {
+                            events.push(EventBase::from_fields(&timestamp, &split_fields));
+                        }
                     }
                     None => {
                         eprintln!("Failed to split log line");
@@ -113,6 +118,9 @@ fn main() -> std::process::ExitCode {
     println!("Unhandled Event Count: {}", unhandled_event_types.len());
     for event in unhandled_event_types {
         println!("\t -> {event}");
+    }
+    for event in events {
+        println!("{}", event.to_string());
     }
     return ExitCode::SUCCESS;
 }
