@@ -1,0 +1,16 @@
+[
+  {
+    "label": "cargo build",
+    "command": "cargo build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always"
+  },
+  {
+    "label": "cargo run",
+    "command": "cargo run",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always"
+  }
+]
