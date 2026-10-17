@@ -2,7 +2,7 @@ mod log_parser {
     pub mod event;
     pub mod event_type;
 }
-
+use log_parser::event::Event;
 use log_parser::event::EventBase;
 use log_parser::event_type::EventType;
 
@@ -75,7 +75,7 @@ fn main() -> std::process::ExitCode {
     };
     let mut file_reader = BufReader::new(log_file);
 
-    let mut events: Vec<EventBase> = Vec::new();
+    let mut events: Vec<Event> = Vec::new();
 
     let mut unhandled_event_types: HashSet<String> = HashSet::new();
     let mut event = String::new();
@@ -90,7 +90,7 @@ fn main() -> std::process::ExitCode {
                 match event.split_once(COMBAT_LOG_TIMESTAMP_DELIMITER) {
                     Some((timestamp, fields)) => {
                         let split_fields: Vec<&str> = _event_tokenizer(&fields);
-                        let event_type = match EventType::from_str(split_fields[0]) {
+                        match EventType::from_str(split_fields[0]) {
                             Ok(event) => event,
                             Err(error) => {
                                 unhandled_event_types.insert(String::from_str(&split_fields[0]).unwrap());
@@ -98,9 +98,8 @@ fn main() -> std::process::ExitCode {
                                 continue;
                             }
                         };
-                        if split_fields.len() >= 9 {
-                            events.push(EventBase::from_fields(&timestamp, &split_fields));
-                        }
+
+                        events.push(Event::from_fields(&timestamp, &split_fields));
                     }
                     None => {
                         eprintln!("Failed to split log line");
@@ -114,13 +113,15 @@ fn main() -> std::process::ExitCode {
         }
     }
 
+    for event in events {
+        println!("{}", event.to_string());
+    }
+
     println!("");
     println!("Unhandled Event Count: {}", unhandled_event_types.len());
     for event in unhandled_event_types {
         println!("\t -> {event}");
     }
-    for event in events {
-        println!("{}", event.to_string());
-    }
+
     return ExitCode::SUCCESS;
 }
