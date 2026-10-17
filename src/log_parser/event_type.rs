@@ -52,6 +52,7 @@ const COMBAT_LOG_EVENT_TYPE_SPELL_SUMMON: &str = "SPELL_SUMMON"; //NOTE: Summon 
 const COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT: &str = "SPELL_RESURRECT"; //NOTE: Combat Res
 const COMBAT_LOG_EVENT_TYPE_SWING_MISSED: &str = "SWING_MISSED"; //NOTE: Swing Whiffed
 const COMBAT_LOG_EVENT_TYPE_SPELL_MISSED: &str = "SPELL_MISSED"; //NOTE: Spell Whiffed
+const COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_MISSED: &str = "SPELL_PERIODIC_MISSED"; //NOTE: Periodic Spell Damage Whiffed
 const COMBAT_LOG_EVENT_TYPE_RANGE_MISSED: &str = "RANGE_MISSED"; //NOTE: Range Whiffed
 const COMBAT_LOG_EVENT_TYPE_UNIT_DIED: &str = "UNIT_DIED"; //NOTE: some unit died (there might an associated killing blow event)
 const COMBAT_LOG_EVENT_TYPE_UNIT_DESTROYED: &str = "UNIT_DESTROYED"; //NOTE: pet/totem/object detroyed
@@ -111,6 +112,7 @@ pub enum EventType {
     SpellResurrect,
     SwingMissed,
     SpellMissed,
+    SpellPeriodicMissed,
     RangeMissed,
     UnitDied,
     UnitDestroyed,
@@ -173,6 +175,7 @@ impl FromStr for EventType {
             COMBAT_LOG_EVENT_TYPE_SPELL_RESURRECT => Ok(EventType::SpellResurrect),
             COMBAT_LOG_EVENT_TYPE_SWING_MISSED => Ok(EventType::SwingMissed),
             COMBAT_LOG_EVENT_TYPE_SPELL_MISSED => Ok(EventType::SpellMissed),
+            COMBAT_LOG_EVENT_TYPE_SPELL_PERIODIC_MISSED => Ok(EventType::SpellPeriodicMissed),
             COMBAT_LOG_EVENT_TYPE_RANGE_MISSED => Ok(EventType::RangeMissed),
             COMBAT_LOG_EVENT_TYPE_UNIT_DIED => Ok(EventType::UnitDied),
             COMBAT_LOG_EVENT_TYPE_UNIT_DESTROYED => Ok(EventType::UnitDestroyed),

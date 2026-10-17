@@ -58,6 +58,10 @@ fn _event_tokenizer(event: &str) -> Vec<&str> {
                 fields.push(&event[slice_start..i]);
                 slice_start = i + 1;
             }
+            (None, b'\n') => {
+                fields.push(&event[slice_start..(i - 1)]);
+                slice_start = i + 1;
+            }
             (_, _) => {}
         }
     }
@@ -113,9 +117,10 @@ fn main() -> std::process::ExitCode {
         }
     }
 
-    for event in events {
-        println!("{}", event.to_string());
+    for _event in &events {
+        //println!("{}", event.to_string());
     }
+    println!("{}", events[0].to_string());
 
     println!("");
     println!("Unhandled Event Count: {}", unhandled_event_types.len());
