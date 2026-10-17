@@ -1,6 +1,7 @@
 mod log_parser {
     pub mod event;
     pub mod event_type;
+    pub mod parse_utils;
 }
 use log_parser::event::Event;
 use log_parser::event::EventBase;

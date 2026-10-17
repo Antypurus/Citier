@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use super::event_type::EventType;
+use super::parse_utils::parse_bool;
 
 pub struct EventBase {
     pub timestamp: String,
@@ -25,23 +26,21 @@ pub struct CombatLogInfoEvent {
     project_id: u32,
 }
 
+impl CombatLogInfoEvent {
+    pub fn from_fields(timestamp: &str, fields: &Vec<&str>) -> CombatLogInfoEvent {
+        return CombatLogInfoEvent {
+            timestamp: String::from_str(timestamp).unwrap_or(String::default()),
+            log_version: fields[1].parse().unwrap_or(0),
+            advanced_logging_enabled: parse_bool(fields[3]).unwrap_or_default(),
+            build_version: String::from_str(fields[5]).unwrap_or(String::default()),
+            project_id: fields[7].parse().unwrap_or(0),
+        };
+    }
+}
+
 pub enum Event {
     NormalEvent(EventBase),
     CombatLogInfo(CombatLogInfoEvent),
-}
-
-fn parse_bool(s: &str) -> Option<bool> {
-    match s.trim() {
-        "1" | "true" | "TRUE" | "True" => {
-            return Some(true);
-        }
-        "0" | "false" | "FALSE" | "False" => {
-            return Some(false);
-        }
-        _ => {
-            return None;
-        }
-    }
 }
 
 impl Event {
@@ -49,13 +48,7 @@ impl Event {
         let event_type = EventType::from_str(fields[0]).unwrap_or(EventType::Unknown);
         match event_type {
             EventType::LogVersion => {
-                return Event::CombatLogInfo(CombatLogInfoEvent {
-                    timestamp: String::from_str(timestamp).unwrap_or(String::default()),
-                    log_version: fields[1].parse().unwrap_or(0),
-                    advanced_logging_enabled: parse_bool(fields[3]).unwrap_or_default(),
-                    build_version: String::from_str(fields[5]).unwrap_or(String::default()),
-                    project_id: fields[7].parse().unwrap_or(0),
-                });
+                return Event::CombatLogInfo(CombatLogInfoEvent::from_fields(timestamp, fields));
             }
             _ => {
                 if fields.len() >= 9 {
@@ -100,7 +93,7 @@ impl ToString for Event {
     fn to_string(&self) -> String {
         match self {
             Event::NormalEvent(event) => {
-                return format!("{} - {:?}: {} -> {}", &event.timestamp, event.event_type, &event.source_name, &event.target_name);
+                return event.to_string();
             }
             Event::CombatLogInfo(event) => {
                 return format!(
