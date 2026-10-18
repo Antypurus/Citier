@@ -97,9 +97,9 @@ fn main() -> std::process::ExitCode {
                         let split_fields: Vec<&str> = _event_tokenizer(&fields);
                         match EventType::from_str(split_fields[0]) {
                             Ok(event) => event,
-                            Err(error) => {
+                            Err(_error) => {
                                 unhandled_event_types.insert(String::from_str(&split_fields[0]).unwrap());
-                                eprintln!("{error}");
+                                //eprintln!("{error}");
                                 continue;
                             }
                         };
@@ -121,7 +121,7 @@ fn main() -> std::process::ExitCode {
     for _event in &events {
         //println!("{}", event.to_string());
     }
-    println!("{}", events[0].to_string());
+    println!("{}", events[1].to_string());
 
     println!("");
     println!("Unhandled Event Count: {}", unhandled_event_types.len());
