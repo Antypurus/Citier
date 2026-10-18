@@ -71,6 +71,37 @@ impl ToString for ZoneChangeEvent {
     }
 }
 
+pub struct MapChangeEvent {
+    timestamp: String,
+    map_id: u64,
+    map_name: String,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+}
+
+impl MapChangeEvent {
+    pub fn from_fields(timestamp: &str, fields: &Vec<&str>) -> MapChangeEvent {
+        assert!(fields.len() == 7);
+        return MapChangeEvent {
+            timestamp: String::from_str(timestamp).unwrap_or_default(),
+            map_id: fields[1].parse().unwrap_or_default(),
+            map_name: String::from_str(fields[2]).unwrap_or_default(),
+            x_min: fields[3].parse().unwrap_or_default(),
+            x_max: fields[4].parse().unwrap_or_default(),
+            y_min: fields[5].parse().unwrap_or_default(),
+            y_max: fields[6].parse().unwrap_or_default(),
+        };
+    }
+}
+
+impl ToString for MapChangeEvent {
+    fn to_string(&self) -> String {
+        return format!("{} - {:?}: {} ({}) Bounds: [{} , {}] - [{} , {}]", self.timestamp, EventType::ZoneChange, self.map_name, self.map_id, self.x_min, self.x_max, self.y_min, self.y_max);
+    }
+}
+
 pub struct EventBase {
     pub timestamp: String,
     pub event_type: EventType,
@@ -103,6 +134,8 @@ impl EventBase {
             };
         }
 
+        eprintln!("Unparsed Event:{:?}", event_type);
+
         return EventBase {
             timestamp: String::default(),
             event_type,
@@ -128,40 +161,29 @@ pub enum Event {
     NormalEvent(EventBase),
     CombatLogInfo(CombatLogInfoEvent),
     ZoneChange(ZoneChangeEvent),
+    MapChange(MapChangeEvent),
 }
 
 impl Event {
     pub fn from_fields(timestamp: &str, fields: &Vec<&str>) -> Event {
         let event_type = EventType::from_str(fields[0]).unwrap_or(EventType::Unknown);
-        match event_type {
-            EventType::LogVersion => {
-                return Event::CombatLogInfo(CombatLogInfoEvent::from_fields(timestamp, fields));
-            }
-            EventType::ZoneChange => {
-                return Event::ZoneChange(ZoneChangeEvent::from_fields(timestamp, fields));
-            }
-            _ => {
-                return Event::NormalEvent(EventBase::from_fields(timestamp, fields, event_type));
-            }
-        }
+        return match event_type {
+            EventType::LogVersion => Event::CombatLogInfo(CombatLogInfoEvent::from_fields(timestamp, fields)),
+            EventType::ZoneChange => Event::ZoneChange(ZoneChangeEvent::from_fields(timestamp, fields)),
+            EventType::MapChange => Event::MapChange(MapChangeEvent::from_fields(timestamp, fields)),
+            _ => Event::NormalEvent(EventBase::from_fields(timestamp, fields, event_type)),
+        };
     }
 }
 
 impl ToString for Event {
     fn to_string(&self) -> String {
-        match self {
-            Event::NormalEvent(event) => {
-                return event.to_string();
-            }
-            Event::CombatLogInfo(event) => {
-                return event.to_string();
-            }
-            Event::ZoneChange(event) => {
-                return event.to_string();
-            }
-            _ => {
-                return String::default();
-            }
+        return match self {
+            Event::NormalEvent(event) => event.to_string(),
+            Event::CombatLogInfo(event) => event.to_string(),
+            Event::ZoneChange(event) => event.to_string(),
+            Event::MapChange(event) => event.to_string(),
+            _ => String::default(),
         };
     }
 }

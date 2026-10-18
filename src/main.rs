@@ -121,7 +121,7 @@ fn main() -> std::process::ExitCode {
     for _event in &events {
         //println!("{}", event.to_string());
     }
-    println!("{}", events[1].to_string());
+    println!("{}", events[2].to_string());
 
     println!("");
     println!("Unhandled Event Count: {}", unhandled_event_types.len());
