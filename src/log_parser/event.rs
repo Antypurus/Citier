@@ -106,6 +106,21 @@ impl ToString for MapChangeEvent {
 pub struct CombatantInfoEvent {
     timestamp: String,
     player_guid: String,
+    strength: u64,
+    agility: u64,
+    stamina: u64,
+    intellect: u64,
+    dodge: u64,
+    parry: u64,
+    block: u64,
+    crit: u64,
+    speed: u64,
+    leech: u64,
+    haste: u64,
+    avoidance: u64,
+    mastery: u64,
+    versatility: u64,
+    armor: u64,
     spec_id: u64,
 }
 
@@ -114,6 +129,21 @@ impl CombatantInfoEvent {
         return CombatantInfoEvent {
             timestamp: String::from_str(timestamp).unwrap_or_default(),
             player_guid: String::from_str(fields[1]).unwrap_or_default(),
+            strength: fields[3].parse().unwrap_or_default(),
+            agility: fields[4].parse().unwrap_or_default(),
+            stamina: fields[5].parse().unwrap_or_default(),
+            intellect: fields[6].parse().unwrap_or_default(),
+            dodge: fields[8].parse().unwrap_or_default(),
+            parry: fields[9].parse().unwrap_or_default(),
+            block: fields[10].parse().unwrap_or_default(),
+            crit: fields[11].parse().unwrap_or_default(),
+            speed: fields[14].parse().unwrap_or_default(),
+            leech: fields[15].parse().unwrap_or_default(),
+            haste: fields[16].parse().unwrap_or_default(),
+            avoidance: fields[19].parse().unwrap_or_default(),
+            mastery: fields[20].parse().unwrap_or_default(),
+            versatility: fields[21].parse().unwrap_or_default(),
+            armor: fields[24].parse().unwrap_or_default(),
             spec_id: fields[25].parse().unwrap_or_default(),
         };
     }
@@ -175,9 +205,28 @@ impl ToString for CombatantInfoEvent {
             71 => "Arms Warrior",
             72 => "Fury Warrior",
             73 => "Protection Warrior",
+            //==================
             _ => "Unknown",
         };
-        return format!("{} - {:?}: {} Spec: {}", self.timestamp, EventType::CombatantInfo, self.player_guid, spec);
+        return format!(
+            "{} - {:?}: {} Spec: {}
+            \t Main Stat: {}|{}|{}
+            \t Crit: {}
+            \t Haste: {}
+            \t Mastery: {}
+            \t Versatility: {}",
+            self.timestamp,
+            EventType::CombatantInfo,
+            self.player_guid,
+            spec,
+            self.intellect,
+            self.agility,
+            self.strength,
+            self.crit,
+            self.haste,
+            self.mastery,
+            self.versatility
+        );
     }
 }
 
