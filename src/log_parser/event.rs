@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::time;
 
 use super::event_type::EventType;
 use super::parse_utils::parse_bool;
@@ -102,6 +103,84 @@ impl ToString for MapChangeEvent {
     }
 }
 
+pub struct CombatantInfoEvent {
+    timestamp: String,
+    player_guid: String,
+    spec_id: u64,
+}
+
+impl CombatantInfoEvent {
+    pub fn from_fields(timestamp: &str, fields: &Vec<&str>) -> CombatantInfoEvent {
+        return CombatantInfoEvent {
+            timestamp: String::from_str(timestamp).unwrap_or_default(),
+            player_guid: String::from_str(fields[1]).unwrap_or_default(),
+            spec_id: fields[25].parse().unwrap_or_default(),
+        };
+    }
+}
+
+impl ToString for CombatantInfoEvent {
+    fn to_string(&self) -> String {
+        let spec = match self.spec_id {
+            //DK Specs
+            250 => "Blood DK",
+            251 => "Frost DK",
+            252 => "Unholy DK",
+            //DH Specs
+            577 => "Havoc DH",
+            581 => "Vengeance DH",
+            1480 => "Devourer DH",
+            //Druid  Specs
+            102 => "Balance Druid",
+            103 => "Feral Druid",
+            104 => "Guardian Druid",
+            105 => "Restoration Druid",
+            //Evoker Specs
+            1467 => "Devastation Evoker",
+            1468 => "Preservation Evoker",
+            1473 => "Augmentation Evoker",
+            //Hunter Specs
+            253 => "Beast Mastery Hunter",
+            254 => "Marksmanship Hunter",
+            255 => "Survival Hunter",
+            //Mage Specs
+            62 => "Arcane Mage",
+            63 => "Fire Mage",
+            64 => "Frost Mage",
+            //Monk Specs
+            268 => "Brewmaster Monk",
+            270 => "Mistweaver Monk",
+            269 => "Windwalkerr Monk",
+            //Paladin Specs
+            65 => "Holy Paladin",
+            66 => "Protection Paladin",
+            70 => "Retribution Paladin",
+            //Priest Specs
+            256 => "Discipline Priest",
+            257 => "Holy Priest",
+            258 => "Shadow Priest",
+            //Rogue Specs
+            259 => "Assassination Rogue",
+            260 => "Outlaw Rogue",
+            261 => "Subtlety Rogue",
+            //Shaman Specs
+            262 => "Elemental Shaman",
+            263 => "Enhancement Shaman",
+            264 => "Restoration Shaman",
+            //Warlock Specs
+            265 => "Affliction Warlock",
+            266 => "Demonology Warlock",
+            267 => "Destruction Warlock",
+            //Warrior Specs
+            71 => "Arms Warrior",
+            72 => "Fury Warrior",
+            73 => "Protection Warrior",
+            _ => "Unknown",
+        };
+        return format!("{} - {:?}: {} Spec: {}", self.timestamp, EventType::CombatantInfo, self.player_guid, spec);
+    }
+}
+
 pub struct EventBase {
     pub timestamp: String,
     pub event_type: EventType,
@@ -162,6 +241,7 @@ pub enum Event {
     CombatLogInfo(CombatLogInfoEvent),
     ZoneChange(ZoneChangeEvent),
     MapChange(MapChangeEvent),
+    CombatantInfo(CombatantInfoEvent),
 }
 
 impl Event {
@@ -171,6 +251,7 @@ impl Event {
             EventType::LogVersion => Event::CombatLogInfo(CombatLogInfoEvent::from_fields(timestamp, fields)),
             EventType::ZoneChange => Event::ZoneChange(ZoneChangeEvent::from_fields(timestamp, fields)),
             EventType::MapChange => Event::MapChange(MapChangeEvent::from_fields(timestamp, fields)),
+            EventType::CombatantInfo => Event::CombatantInfo(CombatantInfoEvent::from_fields(timestamp, fields)),
             _ => Event::NormalEvent(EventBase::from_fields(timestamp, fields, event_type)),
         };
     }
