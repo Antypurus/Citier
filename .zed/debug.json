@@ -5,9 +5,9 @@
     "request": "launch",
     "build": {
       "command": "cargo",
-      "args": ["build"]
+      "args": ["build", "--bin", "citier"]
     },
-    "program": "$ZED_WORKTREE_ROOT/target/debug/citier.exe",
+    "program": "$ZED_WORKTREE_ROOT/target/debug/citier",
     "cwd": "$ZED_WORKTREE_ROOT"
   }
 ]

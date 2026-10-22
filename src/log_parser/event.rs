@@ -122,6 +122,7 @@ pub struct CombatantInfoEvent {
     versatility: u64,
     armor: u64,
     spec_id: u64,
+    pull_auras: String,
 }
 
 impl CombatantInfoEvent {
@@ -145,6 +146,7 @@ impl CombatantInfoEvent {
             versatility: fields[21].parse().unwrap_or_default(),
             armor: fields[24].parse().unwrap_or_default(),
             spec_id: fields[25].parse().unwrap_or_default(),
+            pull_auras: String::from_str(fields[29]).unwrap_or_default(),
         };
     }
 }
@@ -210,22 +212,26 @@ impl ToString for CombatantInfoEvent {
         };
         return format!(
             "{} - {:?}: {} Spec: {}
+            \t Stamina: {}
             \t Main Stat: {}|{}|{}
             \t Crit: {}
             \t Haste: {}
             \t Mastery: {}
-            \t Versatility: {}",
+            \t Versatility: {}
+            \t\t Pull Auras: {}",
             self.timestamp,
             EventType::CombatantInfo,
             self.player_guid,
             spec,
+            self.stamina,
             self.intellect,
             self.agility,
             self.strength,
             self.crit,
             self.haste,
             self.mastery,
-            self.versatility
+            self.versatility,
+            self.pull_auras
         );
     }
 }

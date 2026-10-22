@@ -49,11 +49,17 @@ fn _event_tokenizer(event: &str) -> Vec<&str> {
             (Some(b'['), b']') => {
                 scope_stack.pop();
             }
+            (Some(b'('), b')') => {
+                scope_stack.pop();
+            }
             (_, b'[') => {
                 scope_stack.push(b'[');
             }
             (_, b'"') => {
                 scope_stack.push(b'"');
+            }
+            (_, b'(') => {
+                scope_stack.push(b'(');
             }
             (None, b',') => {
                 fields.push(&event[slice_start..i]);
