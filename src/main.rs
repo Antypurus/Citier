@@ -1,12 +1,15 @@
 mod log_parser {
-    pub mod event;
     pub mod event_type;
     pub mod parse_utils;
     pub mod tokenizer;
+
+    pub mod events {
+        pub mod event;
+    }
 }
-use log_parser::event::Event;
-use log_parser::event::EventBase;
 use log_parser::event_type::EventType;
+use log_parser::events::event::Event;
+use log_parser::events::event::EventBase;
 use log_parser::tokenizer::event_tokenizer;
 
 use core::iter::Iterator;

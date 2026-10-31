@@ -1,9 +1,9 @@
+use std::fmt;
 use std::str::FromStr;
-use std::{fmt, time};
 
-use super::event_type::EventType;
-use super::parse_utils::parse_bool;
-use super::tokenizer::owning_event_tokenizer;
+use crate::log_parser::event_type::EventType;
+use crate::log_parser::parse_utils::parse_bool;
+use crate::log_parser::tokenizer::owning_event_tokenizer;
 
 pub struct CombatLogInfoEvent {
     timestamp: String,
@@ -114,6 +114,13 @@ impl PullAura {
     pub fn create(source: String, spell_id: u64, stack_data: String) -> PullAura {
         return PullAura { source_guid: source, spell_id: spell_id, stack_data: stack_data };
     }
+
+    pub fn from_field(auras_field: &str) -> Vec<PullAura> {
+        let on_pull_auras = owning_event_tokenizer(auras_field.trim_start_matches('[').trim_end_matches(']'));
+        let pull_auras: Vec<PullAura> =
+            on_pull_auras.chunks_exact(3).map(|c| PullAura { source_guid: c[0].to_owned(), spell_id: c[1].parse().unwrap_or_default(), stack_data: c[2].to_owned() }).collect();
+        return pull_auras;
+    }
 }
 
 impl ToString for PullAura {
@@ -126,6 +133,12 @@ impl fmt::Debug for PullAura {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return write!(f, "{}", self.to_string());
     }
+}
+
+pub struct PvETalentTreeEntry {
+    node_id: u64,
+    entry_id: u64,
+    rank: u64,
 }
 
 pub struct CombatantInfoEvent {
@@ -147,15 +160,14 @@ pub struct CombatantInfoEvent {
     versatility: u64,
     armor: u64,
     spec_id: u64,
+    talents: String,
+    pvp_talents: String,
+    items: String,
     pull_auras: Vec<PullAura>,
 }
 
 impl CombatantInfoEvent {
     pub fn from_fields(timestamp: &str, fields: &Vec<&str>) -> CombatantInfoEvent {
-        let on_pull_auras = owning_event_tokenizer(fields[29].trim_start_matches('[').trim_end_matches(']'));
-        let pull_auras: Vec<PullAura> =
-            on_pull_auras.chunks_exact(3).map(|c| PullAura { source_guid: c[0].to_owned(), spell_id: c[1].parse().unwrap_or_default(), stack_data: c[2].to_owned() }).collect();
-
         return CombatantInfoEvent {
             timestamp: String::from_str(timestamp).unwrap_or_default(),
             player_guid: String::from_str(fields[1]).unwrap_or_default(),
@@ -175,7 +187,10 @@ impl CombatantInfoEvent {
             versatility: fields[21].parse().unwrap_or_default(),
             armor: fields[24].parse().unwrap_or_default(),
             spec_id: fields[25].parse().unwrap_or_default(),
-            pull_auras: pull_auras,
+            talents: String::from_str(fields[26]).unwrap_or_default(),
+            pvp_talents: String::from_str(fields[27]).unwrap_or_default(),
+            items: String::from_str(fields[28]).unwrap_or_default(),
+            pull_auras: PullAura::from_field(fields[29]),
         };
     }
 }
@@ -247,6 +262,9 @@ impl ToString for CombatantInfoEvent {
             \t Haste: {}
             \t Mastery: {}
             \t Versatility: {}
+            \t PvE Talents: {}
+            \t PvP Talents: {}
+            \t Equipped Items: {}
             \t Pull Auras: {:?}\n",
             self.timestamp,
             EventType::CombatantInfo,
@@ -260,6 +278,9 @@ impl ToString for CombatantInfoEvent {
             self.haste,
             self.mastery,
             self.versatility,
+            self.talents,
+            self.pvp_talents,
+            self.items,
             self.pull_auras
         );
     }
