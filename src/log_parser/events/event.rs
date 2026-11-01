@@ -118,7 +118,7 @@ impl PullAura {
     pub fn from_field(auras_field: &str) -> Vec<PullAura> {
         let on_pull_auras = owning_event_tokenizer(auras_field.trim_start_matches('[').trim_end_matches(']'));
         let pull_auras: Vec<PullAura> =
-            on_pull_auras.chunks_exact(3).map(|c| PullAura { source_guid: c[0].to_owned(), spell_id: c[1].parse().unwrap_or_default(), stack_data: c[2].to_owned() }).collect();
+            on_pull_auras.chunks_exact(3).map(|chunk| PullAura { source_guid: chunk[0].to_owned(), spell_id: chunk[1].parse().unwrap_or_default(), stack_data: chunk[2].to_owned() }).collect();
         return pull_auras;
     }
 }
@@ -141,6 +141,29 @@ pub struct PvETalentTreeEntry {
     rank: u64,
 }
 
+impl PvETalentTreeEntry {
+    pub fn from_field(talents_field: &str) -> Vec<PvETalentTreeEntry> {
+        let talent_list = owning_event_tokenizer(talents_field.trim_start_matches("[").trim_end_matches("]"));
+
+        let mut result: Vec<PvETalentTreeEntry> = Vec::new();
+        for talent_entry in talent_list {
+            let talent_info = owning_event_tokenizer(&talent_entry[1..talent_entry.len() - 1]);
+            result.push(PvETalentTreeEntry {
+                node_id: talent_info[0].parse().unwrap_or_default(),
+                entry_id: talent_info[1].parse().unwrap_or_default(),
+                rank: talent_info[2].parse().unwrap_or_default(),
+            });
+        }
+        return result;
+    }
+}
+
+impl fmt::Debug for PvETalentTreeEntry {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "Node:{} - Talent:{} Rank:{}", self.node_id, self.entry_id, self.rank);
+    }
+}
+
 pub struct CombatantInfoEvent {
     timestamp: String,
     player_guid: String,
@@ -160,7 +183,7 @@ pub struct CombatantInfoEvent {
     versatility: u64,
     armor: u64,
     spec_id: u64,
-    talents: String,
+    talents: Vec<PvETalentTreeEntry>,
     pvp_talents: String,
     items: String,
     pull_auras: Vec<PullAura>,
@@ -187,7 +210,7 @@ impl CombatantInfoEvent {
             versatility: fields[21].parse().unwrap_or_default(),
             armor: fields[24].parse().unwrap_or_default(),
             spec_id: fields[25].parse().unwrap_or_default(),
-            talents: String::from_str(fields[26]).unwrap_or_default(),
+            talents: PvETalentTreeEntry::from_field(fields[26]),
             pvp_talents: String::from_str(fields[27]).unwrap_or_default(),
             items: String::from_str(fields[28]).unwrap_or_default(),
             pull_auras: PullAura::from_field(fields[29]),
@@ -262,10 +285,10 @@ impl ToString for CombatantInfoEvent {
             \t Haste: {}
             \t Mastery: {}
             \t Versatility: {}
-            \t PvE Talents: {}
+            \t PvE Talents: {:?}
             \t PvP Talents: {}
             \t Equipped Items: {}
-            \t Pull Auras: {:?}\n",
+            \t Pull Auras: {:?}",
             self.timestamp,
             EventType::CombatantInfo,
             self.player_guid,

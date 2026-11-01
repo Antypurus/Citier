@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 pub fn event_tokenizer(event: &str) -> Vec<&str> {
+    let event = event.trim_end_matches(['\r', '\n']);
     let mut fields: Vec<&str> = Vec::new();
 
     let mut slice_start: usize = 0;
@@ -30,13 +31,12 @@ pub fn event_tokenizer(event: &str) -> Vec<&str> {
                 fields.push(&event[slice_start..i]);
                 slice_start = i + 1;
             }
-            (None, b'\n') => {
-                fields.push(&event[slice_start..(i - 1)]);
-                slice_start = i + 1;
-            }
             (_, _) => {}
         }
     }
+
+    // the last field has no trailing delimiter so it has to be pushed once we run out of input
+    fields.push(&event[slice_start..]);
 
     return fields;
 }
