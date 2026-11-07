@@ -5,6 +5,7 @@ mod log_parser {
 
     pub mod events {
         pub mod event;
+        pub mod zone_change;
     }
 }
 use log_parser::event_type::EventType;
