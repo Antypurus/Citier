@@ -4,6 +4,7 @@ mod log_parser {
     pub mod tokenizer;
 
     pub mod events {
+        pub mod combat_log_info;
         pub mod event;
         pub mod zone_change;
     }
