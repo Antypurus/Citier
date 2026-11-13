@@ -5,6 +5,7 @@ mod log_parser {
 
     pub mod events {
         pub mod combat_log_info;
+        pub mod combatant_info;
         pub mod event;
         pub mod zone_change;
     }
