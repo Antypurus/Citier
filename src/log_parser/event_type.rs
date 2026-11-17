@@ -58,7 +58,7 @@ const COMBAT_LOG_EVENT_TYPE_UNIT_DIED: &str = "UNIT_DIED"; //NOTE: some unit die
 const COMBAT_LOG_EVENT_TYPE_UNIT_DESTROYED: &str = "UNIT_DESTROYED"; //NOTE: pet/totem/object detroyed
 const COMBAT_LOG_EVENT_TYPE_UNIT_DISSIPATES: &str = "UNIT_DISSIPATES"; //NOTE: unit fades out (similar to unit killed)
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EventType {
     Unknown,
     //Encounter & Metadata Events

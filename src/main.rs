@@ -4,18 +4,18 @@ mod log_parser {
     pub mod tokenizer;
 
     pub mod events {
+        pub mod combat_event;
         pub mod combat_log_info;
         pub mod combatant_info;
         pub mod event;
+        pub mod unhandled_event;
         pub mod zone_change;
     }
 }
 use log_parser::event_type::EventType;
 use log_parser::events::event::Event;
-use log_parser::events::event::EventBase;
 use log_parser::tokenizer::event_tokenizer;
 
-use core::iter::Iterator;
 use std::collections::HashSet;
 use std::fs;
 use std::io::{BufRead, BufReader};
@@ -91,10 +91,18 @@ fn main() -> std::process::ExitCode {
         }
     }
 
+    let mut unparsed_events: HashSet<EventType> = HashSet::new();
     for _event in &events {
-        if let Event::CombatantInfo(info_event) = _event {
-            println!("{}", info_event.to_string());
+        if let Event::Unhandled(info_event) = _event {
+            unparsed_events.insert(info_event.event_type);
+        } else {
+            println!("{}", _event.to_string());
         }
+    }
+    println!("");
+    println!("Unparsed Event Count: {}", unparsed_events.len());
+    for event in unparsed_events {
+        println!("\t -> {event:?}");
     }
 
     println!("");

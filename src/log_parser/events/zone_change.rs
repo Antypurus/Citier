@@ -37,7 +37,7 @@ impl MapChangeEvent {
 
 impl ToString for MapChangeEvent {
     fn to_string(&self) -> String {
-        return format!("{} - {:?}: {} ({}) Bounds: [{} , {}] - [{} , {}]", self.timestamp, EventType::ZoneChange, self.map_name, self.map_id, self.x_min, self.x_max, self.y_min, self.y_max);
+        return format!("{} -> {:?}: {} ({}) Bounds: [{} , {}] - [{} , {}]", &self.timestamp, EventType::ZoneChange, self.map_name, self.map_id, self.x_min, self.x_max, self.y_min, self.y_max);
     }
 }
 
